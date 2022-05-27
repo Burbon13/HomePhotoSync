@@ -1,5 +1,6 @@
-var express = require('express');
-var router = express.Router();
+let express = require('express');
+let router = express.Router();
+let photoManagement = require('../services/photo-management');
 
 router.get('/test', function(req, res) {
   res.send('We have always looked into chaos and called it God. I am God!');
@@ -14,9 +15,10 @@ router.get('/photos', function(req, res) {
       .status(400)
       .json({ message: 'Following body required: {phoneId:string, photoIdList:[string]}' });
   } else {
+    let wantedPhotos = photoManagement.retrieveUnsavedPhotos(phoneId, photoIdList);
     res
       .status(200)
-      .json({ phoneId: phoneId, photoIdList: ['p1', 'p2', 'p3'] });
+      .json({ phoneId: phoneId, photoIdList: wantedPhotos });
   }
 });
 
@@ -54,9 +56,10 @@ router.put('/photos', function(req, res) {
     }
 
     if(validPhotosPayload === true) {
+      photoManagement.savePhotos(phoneId, photos);
       res
       .status(200)
-      .json(photos);
+      .json({ message: 'Photos saved successfully!' });
     }
   }
 });
