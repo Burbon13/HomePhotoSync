@@ -169,3 +169,8 @@ dist
 
 # End of https://www.toptal.com/developers/gitignore/api/node,visualstudiocode
 
+# LevelDB
+level-db/
+
+# Temporary files folder
+tmp/

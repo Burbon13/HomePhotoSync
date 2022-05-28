@@ -1,4 +1,4 @@
-let db = require('./db-management');
+const db = require('./db-management');
 
 let retrieveUnsavedPhotos = (userId, photoIdList) => {
     return db.getUnsavedPhotoIdList(userId, photoIdList);

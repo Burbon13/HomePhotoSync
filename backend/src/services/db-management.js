@@ -1,3 +1,12 @@
+const fs = require('fs');
+const levelup = require('levelup');
+const leveldown = require('leveldown');
+
+const PATH_TO_STORAGE = './tmp/';
+
+const mydb = levelup(leveldown('./level-db'));
+
+
 // === DUMB DATABASE ===
 let _photos = {};
 
@@ -21,14 +30,16 @@ let getUnsavedPhotoIdList = (userId, photoIdList) => {
 
 let savePhotos = (userId, photos) => {
     if (! (userId in _photos)) {
-        _photos[userId] = new Set();
+        _photos[userId] = {
+            photoIdSet: new Set(),
+            photos: []
+        };
     }
 
     photos.forEach((photo) => {
         _photos[userId].photoIdSet.add(photo.photoId);
-        _photos[userId].photos.push({
-            photoEncoding: photo.photoEncoding,
-            encodingTechnique: photo.encodingTechnique
+        fs.writeFile(PATH_TO_STORAGE + photo.photoId, photo.photoEncoding.data, 'base64', function(err) {
+            console.log(err);
         });
     });
 };
