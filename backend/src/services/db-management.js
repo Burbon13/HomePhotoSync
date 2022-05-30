@@ -36,9 +36,7 @@ let savePhotos = (userId, photos) => {
 
   photos.forEach((photo) => {
     _photos[userId].photoIdSet.push(photo.photoId);
-    fs.writeFile(PATH_STORAGE + photo.photoId, photo.photoEncoding.data, 'base64', function (err) {
-      console.log(err);
-    });
+    fs.writeFileSync(PATH_STORAGE + photo.photoId, photo.photoEncoding.data, 'base64');
   });
   fs.writeFileSync(PATH_DB, JSON.stringify(_photos));
 };
