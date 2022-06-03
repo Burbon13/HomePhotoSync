@@ -3,7 +3,7 @@ const router = express.Router();
 const photoManagement = require('../services/photo-management');
 
 router.get('/test', function(req, res) {
-	res.send('We have always looked into chaos and called it God. I am God!');
+	res.status(200).json({message: 'We have always looked into chaos and called it God. I am God!'});
 });
 
 router.get('/photos', function(req, res) {
