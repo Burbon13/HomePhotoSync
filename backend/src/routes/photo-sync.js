@@ -6,7 +6,7 @@ router.get('/test', function(req, res) {
 	res.status(200).json({message: 'We have always looked into chaos and called it God. I am God!'});
 });
 
-router.get('/photos', function(req, res) {
+router.post('/photos', function(req, res) {
 	let phoneId = req.body.phoneId;
   let photoIdList = req.body.photoIdList;
 

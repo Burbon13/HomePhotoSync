@@ -1,6 +1,7 @@
 package com.burbon.photosync
 
 import android.os.Bundle
+import android.util.Log
 import com.google.android.material.snackbar.Snackbar
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.findNavController
@@ -10,6 +11,7 @@ import androidx.navigation.ui.setupActionBarWithNavController
 import android.view.Menu
 import android.view.MenuItem
 import com.burbon.photosync.databinding.ActivityMainBinding
+import com.burbon.photosync.utils.TAG
 
 class MainActivity : AppCompatActivity() {
 
@@ -47,6 +49,17 @@ class MainActivity : AppCompatActivity() {
         return when (item.itemId) {
             R.id.action_settings -> true
             else -> super.onOptionsItemSelected(item)
+        }
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode == 123) {
+            Log.i(TAG, "AHA $permissions $grantResults")
         }
     }
 

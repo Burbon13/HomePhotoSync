@@ -1,15 +1,21 @@
 package com.burbon.photosync.ui.operations
 
+import android.Manifest
+import android.content.pm.PackageManager
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.burbon.photosync.R
 import com.burbon.photosync.databinding.FragmentFirstBinding
+import com.burbon.photosync.utils.TAG
 
 
 class OperationsFragment : Fragment() {
@@ -46,6 +52,22 @@ class OperationsFragment : Fragment() {
 
         binding.buttonFirst.setOnClickListener {
             findNavController().navigate(R.id.action_FirstFragment_to_SecondFragment)
+        }
+        binding.getPhotosButton.setOnClickListener {
+            if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                != PackageManager.PERMISSION_GRANTED
+            ) {
+                Log.i(TAG, "Requesting permissions")
+                ActivityCompat.requestPermissions(
+                    requireActivity(),
+                    arrayOf(
+                        Manifest.permission.WRITE_EXTERNAL_STORAGE),
+                    123
+                )
+            } else {
+                Log.i(TAG, "Permissions already accepted")
+                _operationsViewModel.getLocalPhotos()
+            }
         }
     }
 
