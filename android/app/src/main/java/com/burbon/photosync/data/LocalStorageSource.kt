@@ -9,10 +9,9 @@ object LocalStorageSource {
 
     private val photosPath = "/sdcard/DCIM/CameraTest" // TODO: Make it modifiable
 
-    fun getPhotoNames(): List<String> {
+    fun getPhotoNames(): List<File> {
         Log.i(TAG, "Retrieve photo names")
         val photoList = File(photosPath).listFiles().asList()
-        val photoListNames = photoList.map { photo -> photo.name }
-        return photoListNames
+        return photoList
     }
 }

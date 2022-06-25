@@ -12,8 +12,6 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import androidx.navigation.fragment.findNavController
-import com.burbon.photosync.R
 import com.burbon.photosync.databinding.FragmentFirstBinding
 import com.burbon.photosync.utils.TAG
 
@@ -50,24 +48,27 @@ class OperationsFragment : Fragment() {
             binding.testTextView.text = testResult
         })
 
-        binding.buttonFirst.setOnClickListener {
-            findNavController().navigate(R.id.action_FirstFragment_to_SecondFragment)
-        }
-        binding.getPhotosButton.setOnClickListener {
-            if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE)
+        binding.buttonGetPhotos.setOnClickListener {
+            if (ContextCompat.checkSelfPermission(
+                    requireContext(),
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE
+                )
                 != PackageManager.PERMISSION_GRANTED
             ) {
                 Log.i(TAG, "Requesting permissions")
                 ActivityCompat.requestPermissions(
                     requireActivity(),
-                    arrayOf(
-                        Manifest.permission.WRITE_EXTERNAL_STORAGE),
+                    arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE),
                     123
                 )
             } else {
                 Log.i(TAG, "Permissions already accepted")
                 _operationsViewModel.getLocalPhotos()
             }
+        }
+
+        binding.buttonSendPhotos.setOnClickListener {
+            _operationsViewModel.sendLocalPhotos()
         }
     }
 
