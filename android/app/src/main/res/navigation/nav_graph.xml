@@ -9,5 +9,13 @@
         android:id="@+id/FirstFragment"
         android:name="com.burbon.photosync.ui.operations.OperationsFragment"
         android:label="@string/first_fragment_label"
-        tools:layout="@layout/fragment_main"/>
+        tools:layout="@layout/fragment_main">
+        <action
+            android:id="@+id/action_FirstFragment_to_settingsFragment"
+            app:destination="@id/settingsFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/settingsFragment"
+        android:name="com.burbon.photosync.ui.settings.SettingsFragment"
+        android:label="SettingsFragment" />
 </navigation>
