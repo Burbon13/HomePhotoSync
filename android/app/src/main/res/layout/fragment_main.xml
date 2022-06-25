@@ -10,8 +10,11 @@
         android:id="@+id/test_text_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/hello_first_fragment"
-        app:layout_constraintBottom_toTopOf="@id/button_send_photos"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="24dp"
+        android:layout_marginEnd="24dp"
+        android:padding="8pt"
+        android:text="@string/greeting_message"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -20,19 +23,20 @@
         android:id="@+id/button_send_photos"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="SEND PHOTOS"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_marginTop="24dp"
+        android:text="@string/send_photos"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/test_text_view" />
+        app:layout_constraintTop_toBottomOf="@+id/button_get_photos" />
 
     <Button
         android:id="@+id/button_get_photos"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Get Photos"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_height="48dp"
+        android:layout_marginTop="128dp"
+        android:text="@string/get_photos"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/button_send_photos" />
+        app:layout_constraintTop_toTopOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>

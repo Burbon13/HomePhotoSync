@@ -1,4 +1,4 @@
-package com.burbon.photosync.data
+package com.burbon.photosync.data.results
 
 
 sealed class Result<out T : Any> {

@@ -1,6 +1,6 @@
-package com.burbon.photosync.data
+package com.burbon.photosync.data.requests
 
-data class RequestImages(val phoneId: String, val photoList: List<ImageEncoding>)
+data class RequestSendImages(val phoneId: String, val photoList: List<ImageEncoding>)
 
 data class ImageEncoding(
     val photoId: String,

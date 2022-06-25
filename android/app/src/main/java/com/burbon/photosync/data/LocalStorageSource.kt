@@ -4,7 +4,6 @@ import android.util.Log
 import com.burbon.photosync.utils.TAG
 import java.io.File
 
-
 object LocalStorageSource {
 
     private val photosPath = "/sdcard/DCIM/CameraTest" // TODO: Make it modifiable

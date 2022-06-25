@@ -6,14 +6,15 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.burbon.photosync.data.ImageEncoding
+import com.burbon.photosync.data.requests.ImageEncoding
 import com.burbon.photosync.data.LocalStorageSource
 import com.burbon.photosync.data.PhotoDataSource
-import com.burbon.photosync.data.PhotoEncoding
-import com.burbon.photosync.data.RequestImages
-import com.burbon.photosync.data.ResultImagesToSend
-import com.burbon.photosync.data.ResultMessage
-import com.burbon.photosync.data.Result
+import com.burbon.photosync.data.requests.PhotoEncoding
+import com.burbon.photosync.data.requests.RequestSendImages
+import com.burbon.photosync.data.results.ResultWhichImagesToSend
+import com.burbon.photosync.data.results.ResultTest
+import com.burbon.photosync.data.results.Result
+import com.burbon.photosync.data.results.ResultSendImages
 import kotlinx.coroutines.launch
 import java.io.ByteArrayOutputStream
 import java.io.File
@@ -26,12 +27,13 @@ class OperationsViewModel() : ViewModel() {
 
     private val phoneId = "testid" // MOCK, replace!
     private var cachedPhotoFiles: List<File>? = null
+    private var requestedImages: Set<String> = HashSet<String>()
 
     init {
         viewModelScope.launch {
             val result = PhotoDataSource.getTest()
             if (result.succeeded) {
-                val resultString = (result as Result.Success<ResultMessage>).data
+                val resultString = (result as Result.Success<ResultTest>).data
                 _testMessage.value = resultString.message
             } else {
                 _testMessage.value = "Something went wrong :("
@@ -46,10 +48,33 @@ class OperationsViewModel() : ViewModel() {
             val photoIds = photoResults.map { photoFile -> photoFile.name }
             val result = PhotoDataSource.getImagesToSend(phoneId, photoIds)
             if (result.succeeded) {
-                val resultImagesToSend = (result as Result.Success<ResultImagesToSend>).data
+                val resultImagesToSend = (result as Result.Success<ResultWhichImagesToSend>).data
+                requestedImages = resultImagesToSend.photoIdList.toSet()
                 _testMessage.value = "Images to send: " + resultImagesToSend.photoIdList.size
             } else {
                 _testMessage.value = "Something went wrong :("
+            }
+        }
+    }
+
+    fun sendLocalPhotos() {
+        viewModelScope.launch {
+            cachedPhotoFiles?.let {
+                val base64Photos = it
+                    .filter { photo -> requestedImages.contains(photo.name) }
+                    .map { photo ->
+                        val base64Encoding = convertImageFileToBase64(photo)
+                        val photoEncoding = PhotoEncoding("image/jpeg", base64Encoding)
+                        ImageEncoding(photo.name, photoEncoding, "base64")
+                    }
+                val requestImages = RequestSendImages(phoneId, base64Photos)
+                val result = PhotoDataSource.putImages(requestImages)
+                if (result.succeeded) {
+                    val resultImages = (result as Result.Success<ResultSendImages>).data
+                    _testMessage.value = resultImages.message
+                } else {
+                    _testMessage.value = "Something went wrong :("
+                }
             }
         }
     }
@@ -63,20 +88,6 @@ class OperationsViewModel() : ViewModel() {
                 }
             }
             return@use outputStream.toString()
-        }
-    }
-
-    fun sendLocalPhotos() {
-        viewModelScope.launch {
-            cachedPhotoFiles?.let {
-                val base64Photos = it.map { photo ->
-                    val base64Encoding = convertImageFileToBase64(photo)
-                    val photoEncoding = PhotoEncoding("image/jpeg", base64Encoding)
-                    ImageEncoding(photo.name, photoEncoding, "base64")
-                }
-                val requestImages = RequestImages(phoneId, base64Photos)
-                val result = PhotoDataSource.putImages(requestImages)
-            }
         }
     }
 }
