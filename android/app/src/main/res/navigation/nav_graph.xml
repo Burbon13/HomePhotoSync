@@ -17,5 +17,5 @@
     <fragment
         android:id="@+id/settingsFragment"
         android:name="com.burbon.photosync.ui.settings.SettingsFragment"
-        android:label="SettingsFragment" />
+        android:label="@string/preferences_fragment_label" />
 </navigation>
