@@ -12,6 +12,7 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.preference.PreferenceManager
 import com.burbon.photosync.databinding.FragmentMainBinding
 import com.burbon.photosync.utils.TAG
 
@@ -20,13 +21,15 @@ class OperationsFragment : Fragment() {
     private var _binding: FragmentMainBinding? = null
     private lateinit var _operationsViewModel: OperationsViewModel
 
-    // This property is only valid between onCreateView and
-    // onDestroyView.
+    // This property is only valid between onCreateView and onDestroyView.
     private val binding get() = _binding!!
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        _operationsViewModel = ViewModelProvider(this).get(OperationsViewModel::class.java)
+        val viewModelFactory =
+            OperationsViewModelFactory(PreferenceManager.getDefaultSharedPreferences(requireContext()))
+        _operationsViewModel =
+            ViewModelProvider(this, viewModelFactory).get(OperationsViewModel::class.java)
     }
 
     override fun onCreateView(

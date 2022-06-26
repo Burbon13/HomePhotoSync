@@ -30,13 +30,15 @@ object PhotoDataSource {
         PhotoService::class.java
     )
 
+    private const val somethingWentWrongMessage = "Something went wrong :(" // Replace with R string
+
     suspend fun getTest(): Result<ResultTest> {
         return try {
             val result = photoService.getTest()
             Result.Success(result)
         } catch (e: Exception) {
             Log.w(TAG, e.toString())
-            Result.Error("Something went wrong :(")
+            Result.Error(somethingWentWrongMessage)
         }
     }
 
@@ -46,12 +48,13 @@ object PhotoDataSource {
     ): Result<ResultWhichImagesToSend> {
         return try {
             Log.d(TAG, "Try get images to send")
-            val result = photoService.getImagesToSend(RequestWhichImagesToSend(phoneId, photoIdList))
+            val result =
+                photoService.getImagesToSend(RequestWhichImagesToSend(phoneId, photoIdList))
             Log.d(TAG, "Get images to send success")
             Result.Success(result)
         } catch (e: Exception) {
             Log.w(TAG, e.toString())
-            Result.Error("Something went wrong :(")
+            Result.Error(somethingWentWrongMessage)
         }
     }
 
@@ -62,8 +65,8 @@ object PhotoDataSource {
             Log.d(TAG, "Images sent request success")
             Result.Success(result)
         } catch (e: Exception) {
-            Log.w(TAG, e.toString())
-            Result.Error("Something went wrong :(")
+            Log.e(TAG, e.toString())
+            Result.Error(somethingWentWrongMessage)
         }
     }
 }

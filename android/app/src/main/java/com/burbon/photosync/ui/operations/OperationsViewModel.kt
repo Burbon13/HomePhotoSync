@@ -1,7 +1,9 @@
 package com.burbon.photosync.ui.operations
 
+import android.content.SharedPreferences
 import android.util.Base64
 import android.util.Base64OutputStream
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -15,34 +17,40 @@ import com.burbon.photosync.data.results.ResultWhichImagesToSend
 import com.burbon.photosync.data.results.ResultTest
 import com.burbon.photosync.data.results.Result
 import com.burbon.photosync.data.results.ResultSendImages
+import com.burbon.photosync.utils.TAG
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.io.ByteArrayOutputStream
 import java.io.File
-import java.util.*
 
-class OperationsViewModel() : ViewModel() {
+class OperationsViewModel(sharedPreferences: SharedPreferences) : ViewModel() {
 
+    // TODO: Should not post the text directly, that is the responsability of the view.
+    // TODO: Replace with some IDs
     private val _testMessage = MutableLiveData<String>()
     val testMessage = _testMessage as LiveData<String>
 
-    private val phoneId = "testid" // MOCK, replace!
     private var cachedPhotoFiles: List<File>? = null
-    private var requestedImages: Set<String> = HashSet<String>()
+    private var requestedImages: Set<String> = HashSet()
+
+    private var phoneId: String = sharedPreferences.getString("user_id", "") ?: "DEFAULT"
 
     init {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             val result = PhotoDataSource.getTest()
             if (result.succeeded) {
                 val resultString = (result as Result.Success<ResultTest>).data
-                _testMessage.value = resultString.message
+                _testMessage.postValue(resultString.message)
             } else {
-                _testMessage.value = "Something went wrong :("
+                _testMessage.postValue("Something went wrong :(")
             }
         }
     }
 
+    private val somethingWentWrongMessage = "Something went wrong :(" // Replace with R string or id
+
     fun getLocalPhotos() {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             val photoResults = LocalStorageSource.getPhotoNames()
             cachedPhotoFiles = photoResults
             val photoIds = photoResults.map { photoFile -> photoFile.name }
@@ -50,16 +58,18 @@ class OperationsViewModel() : ViewModel() {
             if (result.succeeded) {
                 val resultImagesToSend = (result as Result.Success<ResultWhichImagesToSend>).data
                 requestedImages = resultImagesToSend.photoIdList.toSet()
-                _testMessage.value = "Images to send: " + resultImagesToSend.photoIdList.size
+                _testMessage.postValue("Images to send: " + resultImagesToSend.photoIdList.size)
             } else {
-                _testMessage.value = "Something went wrong :("
+                _testMessage.postValue(somethingWentWrongMessage)
             }
         }
     }
 
     fun sendLocalPhotos() {
-        viewModelScope.launch {
+        Log.i(TAG, "Sending Local Photos")
+        viewModelScope.launch(Dispatchers.IO) {
             cachedPhotoFiles?.let {
+                Log.d(TAG, "Converting photos to base64 encoding")
                 val base64Photos = it
                     .filter { photo -> requestedImages.contains(photo.name) }
                     .map { photo ->
@@ -68,17 +78,21 @@ class OperationsViewModel() : ViewModel() {
                         ImageEncoding(photo.name, photoEncoding, "base64")
                     }
                 val requestImages = RequestSendImages(phoneId, base64Photos)
+                Log.d(TAG, "Sending local images to PhotoDataSource")
                 val result = PhotoDataSource.putImages(requestImages)
                 if (result.succeeded) {
+                    Log.i(TAG, "Images sent successfully")
                     val resultImages = (result as Result.Success<ResultSendImages>).data
-                    _testMessage.value = resultImages.message
+                    _testMessage.postValue(resultImages.message)
                 } else {
-                    _testMessage.value = "Something went wrong :("
+                    Log.e(TAG, "Sending local images failed: $result")
+                    _testMessage.postValue(somethingWentWrongMessage)
                 }
             }
         }
     }
 
+    // TODO: Maybe extract to some utils file? Along with the mapping done above.
     // Thanks to https://stackoverflow.com/questions/28758014/how-to-convert-a-file-to-base64
     private fun convertImageFileToBase64(imageFile: File): String {
         return ByteArrayOutputStream().use { outputStream ->

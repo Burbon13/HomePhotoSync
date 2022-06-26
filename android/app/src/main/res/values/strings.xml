@@ -6,6 +6,7 @@
     <string name="greeting_message">Welcome!</string>
     <string name="send_photos">SEND PHOTOS</string>
     <string name="get_photos">Get Photos</string>
+    <string name="sth_went_wrong">Something went wrong :(</string>
 
     <!-- Preference Titles -->
     <string name="general_settings_header">General</string>
@@ -13,4 +14,5 @@
     <!-- Messages Preferences -->
     <string name="server_ip_title">Server IP Address</string>
     <string name="user_id_title">User ID</string>
+    <string name="folder_path_title">Folder Path</string>
 </resources>

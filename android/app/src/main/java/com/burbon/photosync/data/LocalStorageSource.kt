@@ -6,11 +6,10 @@ import java.io.File
 
 object LocalStorageSource {
 
-    private val photosPath = "/sdcard/DCIM/CameraTest" // TODO: Make it modifiable
+    private val photosPath = "/sdcard/DCIM/CameraTest" // Use String from preferences
 
     fun getPhotoNames(): List<File> {
         Log.i(TAG, "Retrieve photo names")
-        val photoList = File(photosPath).listFiles().asList()
-        return photoList
+        return File(photosPath).listFiles().asList()
     }
 }

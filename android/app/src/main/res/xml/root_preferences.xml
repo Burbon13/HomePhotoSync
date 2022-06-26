@@ -12,6 +12,11 @@
             app:title="@string/user_id_title"
             app:useSimpleSummaryProvider="true" />
 
+        <EditTextPreference
+            app:key="folder_path"
+            app:title="@string/folder_path_title"
+            app:useSimpleSummaryProvider="true" />
+
     </PreferenceCategory>
 
 </PreferenceScreen>
