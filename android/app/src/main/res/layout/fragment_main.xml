@@ -7,7 +7,7 @@
     tools:context=".ui.operations.OperationsFragment">
 
     <TextView
-        android:id="@+id/test_text_view"
+        android:id="@+id/ops_status_text_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="24dp"
@@ -18,6 +18,17 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/ops_extra_info_text_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
+        android:padding="8pt"
+        android:text=""
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/ops_status_text_view" />
 
     <Button
         android:id="@+id/button_send_photos"
@@ -34,7 +45,7 @@
         android:id="@+id/button_get_photos"
         android:layout_width="wrap_content"
         android:layout_height="48dp"
-        android:layout_marginTop="128dp"
+        android:layout_marginTop="256dp"
         android:text="@string/get_photos"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

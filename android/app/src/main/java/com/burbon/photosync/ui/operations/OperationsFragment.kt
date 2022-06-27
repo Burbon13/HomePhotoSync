@@ -10,9 +10,9 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.preference.PreferenceManager
+import com.burbon.photosync.R
 import com.burbon.photosync.databinding.FragmentMainBinding
 import com.burbon.photosync.utils.TAG
 
@@ -43,8 +43,9 @@ class OperationsFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        _operationsViewModel.testMessage.observe(viewLifecycleOwner, Observer { testResult ->
-            binding.testTextView.text = testResult
+        _operationsViewModel.operationsStatus.observe(viewLifecycleOwner, { status ->
+            adjustUiActivation(status)
+            updateUiText(status)
         })
 
         binding.buttonGetPhotos.setOnClickListener {
@@ -74,5 +75,45 @@ class OperationsFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+
+    private fun adjustUiActivation(status: OperationsViewModel.OperationsStatus) {
+        // Block buttons if executing operation
+        if (_operationsViewModel.operationsStatusExecuting(status)) {
+            binding.buttonGetPhotos.isActivated = false
+            binding.buttonSendPhotos.isActivated = false
+        } else {
+            binding.buttonGetPhotos.isActivated = true
+            binding.buttonSendPhotos.isActivated = true
+        }
+    }
+
+    private fun updateUiText(status: OperationsViewModel.OperationsStatus) {
+        if (status == OperationsViewModel.OperationsStatus.TESTING_CONNECTION_SUCCESS) {
+            binding.opsStatusTextView.text = getString(R.string.ops_status_connection_success)
+        } else if (status == OperationsViewModel.OperationsStatus.TESTING_CONNECTION_FAILURE) {
+            binding.opsStatusTextView.text = getString(R.string.ops_status_connection_failure)
+        }
+
+        if (status == OperationsViewModel.OperationsStatus.RETRIEVE_NOT_SYNCED_PHOTOS_SUCCESS) {
+            binding.opsStatusTextView.text =
+                getString(R.string.ops_status_retrieve_not_sync_photos_success)
+            binding.opsExtraInfoTextView.text =
+                getString(
+                    R.string.ops_status_retrieve_not_sync_photos_info_number_photos,
+                    _operationsViewModel.getNumberOfPhotosToSync()
+                )
+        } else if (status == OperationsViewModel.OperationsStatus.RETRIEVE_NOT_SYNCED_PHOTOS_FAILURE) {
+            binding.opsStatusTextView.text =
+                getString(R.string.ops_status_retrieve_not_sync_photos_failure)
+        }
+
+        if (status == OperationsViewModel.OperationsStatus.SYNCING_PHOTOS_SUCCESS) {
+            binding.opsStatusTextView.text = getString(R.string.ops_status_sync_photos_success)
+        } else if (status == OperationsViewModel.OperationsStatus.SYNCING_PHOTOS_FAILURE) {
+            binding.opsStatusTextView.text = getString(R.string.ops_status_sync_photos_failure)
+        } else if (status == OperationsViewModel.OperationsStatus.SYNCING_PHOTOS) {
+            binding.opsStatusTextView.text = getString(R.string.ops_status_sync_photos_in_progress)
+        }
     }
 }

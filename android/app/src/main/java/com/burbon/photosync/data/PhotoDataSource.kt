@@ -3,7 +3,6 @@ package com.burbon.photosync.data
 import android.util.Log
 import com.burbon.photosync.data.requests.RequestSendImages
 import com.burbon.photosync.data.requests.RequestWhichImagesToSend
-import com.burbon.photosync.data.results.Result
 import com.burbon.photosync.data.results.ResultSendImages
 import com.burbon.photosync.data.results.ResultWhichImagesToSend
 import com.burbon.photosync.data.results.ResultTest
@@ -30,15 +29,13 @@ object PhotoDataSource {
         PhotoService::class.java
     )
 
-    private const val somethingWentWrongMessage = "Something went wrong :(" // Replace with R string
-
     suspend fun getTest(): Result<ResultTest> {
         return try {
             val result = photoService.getTest()
-            Result.Success(result)
+            Result.success(result)
         } catch (e: Exception) {
             Log.w(TAG, e.toString())
-            Result.Error(somethingWentWrongMessage)
+            Result.failure(e)
         }
     }
 
@@ -50,11 +47,11 @@ object PhotoDataSource {
             Log.d(TAG, "Try get images to send")
             val result =
                 photoService.getImagesToSend(RequestWhichImagesToSend(phoneId, photoIdList))
-            Log.d(TAG, "Get images to send success")
-            Result.Success(result)
+            Log.d(TAG, "Get images to send success: $result")
+            Result.success(result)
         } catch (e: Exception) {
             Log.w(TAG, e.toString())
-            Result.Error(somethingWentWrongMessage)
+            Result.failure(e)
         }
     }
 
@@ -62,11 +59,11 @@ object PhotoDataSource {
         return try {
             Log.d(TAG, "Try send images " + request.photoList.size + " images")
             val result = photoService.sendImages(request)
-            Log.d(TAG, "Images sent request success")
-            Result.Success(result)
+            Log.d(TAG, "Images sent request success: $result")
+            Result.success(result)
         } catch (e: Exception) {
             Log.e(TAG, e.toString())
-            Result.Error(somethingWentWrongMessage)
+            Result.failure(e)
         }
     }
 }

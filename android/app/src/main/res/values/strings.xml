@@ -15,4 +15,12 @@
     <string name="server_ip_title">Server IP Address</string>
     <string name="user_id_title">User ID</string>
     <string name="folder_path_title">Folder Path</string>
+    <string name="ops_status_connection_success">Connection with server works! :D</string>
+    <string name="ops_status_connection_failure">Cannot connect to server :(</string>
+    <string name="ops_status_retrieve_not_sync_photos_success">Retrieved photos that need to be synced (-_-)</string>
+    <string name="ops_status_retrieve_not_sync_photos_info_number_photos">"Number of photos to be synced: %d"</string>
+    <string name="ops_status_retrieve_not_sync_photos_failure">Cannot retrieve photos that need to be synced :(</string>
+    <string name="ops_status_sync_photos_success">Successfully synchronized photos! :D</string>
+    <string name="ops_status_sync_photos_failure">Cannot synchronize photos :(</string>
+    <string name="ops_status_sync_photos_in_progress">Synchronizing photos …</string>
 </resources>
