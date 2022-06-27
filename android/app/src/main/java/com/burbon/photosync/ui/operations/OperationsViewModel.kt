@@ -15,6 +15,9 @@ class OperationsViewModel(sharedPreferences: SharedPreferences) : ViewModel() {
     private val _operationsStatus = MutableLiveData(OperationsStatus.IDLE)
     val operationsStatus = _operationsStatus as LiveData<OperationsStatus>
 
+    private val _currentIndexOfSync = MutableLiveData<Int>()
+    val currentIndexOfSync = _currentIndexOfSync as LiveData<Int>
+
     private var cachedPhotos: Set<File>? = null
 
     private var phoneId: String = sharedPreferences.getString("user_id", "") ?: "DEFAULT"
@@ -34,7 +37,7 @@ class OperationsViewModel(sharedPreferences: SharedPreferences) : ViewModel() {
 
     private val executingStatuses = setOf(
         OperationsStatus.TESTING_CONNECTION,
-        OperationsStatus.RETRIEVE_NOT_SYNCED_PHOTOS_SUCCESS,
+        OperationsStatus.RETRIEVE_NOT_SYNCED_PHOTOS,
         OperationsStatus.SYNCING_PHOTOS
     )
 
@@ -63,11 +66,29 @@ class OperationsViewModel(sharedPreferences: SharedPreferences) : ViewModel() {
         }
     }
 
+    @Deprecated("Will cause out of memory exceptions")
     fun sendLocalPhotos() {
         viewModelScope.launch(Dispatchers.IO) {
             cachedPhotos?.let {
                 _operationsStatus.postValue(OperationsStatus.SYNCING_PHOTOS)
                 val syncPhotosResult = PhotoServices.sendPhotosToSync(phoneId, it)
+                syncPhotosResult.onSuccess {
+                    _operationsStatus.postValue(OperationsStatus.SYNCING_PHOTOS_SUCCESS)
+                }.onFailure {
+                    _operationsStatus.postValue(OperationsStatus.SYNCING_PHOTOS_FAILURE)
+                }
+            }
+        }
+    }
+
+    fun sendLocalPhotosOneByOne() {
+        viewModelScope.launch(Dispatchers.IO) {
+            cachedPhotos?.let {
+                _operationsStatus.postValue(OperationsStatus.SYNCING_PHOTOS)
+                val syncPhotosResult =
+                    PhotoServices.sendPhotosToSyncOneByOne(phoneId, it) { index ->
+                        _currentIndexOfSync.postValue(index)
+                    }
                 syncPhotosResult.onSuccess {
                     _operationsStatus.postValue(OperationsStatus.SYNCING_PHOTOS_SUCCESS)
                 }.onFailure {

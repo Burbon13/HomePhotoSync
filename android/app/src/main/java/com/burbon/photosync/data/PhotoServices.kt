@@ -19,6 +19,8 @@ object PhotoServices {
         NOT_WORKING
     }
 
+    data class SyncOneByOneStatus(val currentIndex: Int, val totalAmount: Int)
+
     suspend fun testBackendConnection(): BackendConnection {
         Log.d(TAG, "Testing backend connection")
         val result = PhotoDataSource.getTest()
@@ -76,6 +78,37 @@ object PhotoServices {
         Log.e(TAG, "Could not synchronize photos: $result")
         return Result.failure(PhotoServicesException("Could not synchronize photos"))
     }
+
+    suspend fun sendPhotosToSyncOneByOne(
+        phoneId: String,
+        photos: Set<File>,
+        callback: (Int) -> Unit
+    ): Result<Unit> {
+        Log.i(TAG, "Sending photos to sync one by one")
+
+        var index = 0     // Seems sketchy - what about concurrency issues?
+        var failures = 0  // Seems sketchy
+        photos.forEach { photo ->
+            val base64Encoding = convertImageFileToBase64(photo)
+            val photoEncoding = PhotoEncoding("image/jpeg", base64Encoding)
+            val encoding = ImageEncoding(photo.name, photoEncoding, "base64")
+            val requestImage = RequestSendImages(phoneId, listOf(encoding))
+            Log.d(TAG, "Sending local images to PhotoDataSource")
+            val result = PhotoDataSource.putImages(requestImage)
+            if (result.isSuccess) {
+                index += 1
+                callback(index)
+            } else {
+                failures += 1
+            }
+        }
+
+        if (failures == 0) {
+            return Result.success(Unit)
+        }
+        return Result.failure(PhotoServicesException("Could not synchronize all photos"))
+    }
+
 
     // TODO: Maybe extract to some utils file? Along with the mapping done above.
     // Thanks to https://stackoverflow.com/questions/28758014/how-to-convert-a-file-to-base64

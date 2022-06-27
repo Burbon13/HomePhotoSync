@@ -23,4 +23,6 @@
     <string name="ops_status_sync_photos_success">Successfully synchronized photos! :D</string>
     <string name="ops_status_sync_photos_failure">Cannot synchronize photos :(</string>
     <string name="ops_status_sync_photos_in_progress">Synchronizing photos …</string>
+    <string name="send_photos_1by1">Send Photos 1by1</string>
+    <string name="synced_nr_photos">Synced %d photos out of %d</string>
 </resources>

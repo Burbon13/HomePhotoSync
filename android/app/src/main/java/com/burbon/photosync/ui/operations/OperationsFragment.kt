@@ -48,6 +48,12 @@ class OperationsFragment : Fragment() {
             updateUiText(status)
         })
 
+        // TODO: Decide what types of values are observable to have a clear structure
+        // TODO: On which UI updates to do when.
+        _operationsViewModel.currentIndexOfSync.observe(viewLifecycleOwner, { index ->
+            binding.opsExtraInfoTextView.text = getString(R.string.synced_nr_photos, index, _operationsViewModel.getNumberOfPhotosToSync())
+        })
+
         binding.buttonGetPhotos.setOnClickListener {
             if (ContextCompat.checkSelfPermission(
                     requireContext(),
@@ -59,7 +65,7 @@ class OperationsFragment : Fragment() {
                 ActivityCompat.requestPermissions(
                     requireActivity(),
                     arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE),
-                    123
+                    123  // TODO: Refactor
                 )
             } else {
                 Log.i(TAG, "Permissions already accepted")
@@ -69,6 +75,10 @@ class OperationsFragment : Fragment() {
 
         binding.buttonSendPhotos.setOnClickListener {
             _operationsViewModel.sendLocalPhotos()
+        }
+
+        binding.buttonSendPhotosOneByOne.setOnClickListener {
+            _operationsViewModel.sendLocalPhotosOneByOne()
         }
     }
 
@@ -80,11 +90,13 @@ class OperationsFragment : Fragment() {
     private fun adjustUiActivation(status: OperationsViewModel.OperationsStatus) {
         // Block buttons if executing operation
         if (_operationsViewModel.operationsStatusExecuting(status)) {
-            binding.buttonGetPhotos.isActivated = false
-            binding.buttonSendPhotos.isActivated = false
+            binding.buttonGetPhotos.isEnabled = false
+            binding.buttonSendPhotos.isEnabled = false
+            binding.buttonSendPhotosOneByOne.isEnabled = false
         } else {
-            binding.buttonGetPhotos.isActivated = true
-            binding.buttonSendPhotos.isActivated = true
+            binding.buttonGetPhotos.isEnabled = true
+            binding.buttonSendPhotos.isEnabled = true
+            binding.buttonSendPhotosOneByOne.isEnabled = true
         }
     }
 
