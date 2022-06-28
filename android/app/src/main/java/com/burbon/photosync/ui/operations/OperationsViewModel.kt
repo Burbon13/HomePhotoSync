@@ -10,7 +10,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.io.File
 
-class OperationsViewModel(sharedPreferences: SharedPreferences) : ViewModel() {
+class OperationsViewModel(private val sharedPreferences: SharedPreferences) : ViewModel() {
 
     private val _operationsStatus = MutableLiveData(OperationsStatus.IDLE)
     val operationsStatus = _operationsStatus as LiveData<OperationsStatus>
@@ -19,8 +19,6 @@ class OperationsViewModel(sharedPreferences: SharedPreferences) : ViewModel() {
     val currentIndexOfSync = _currentIndexOfSync as LiveData<Int>
 
     private var cachedPhotos: Set<File>? = null
-
-    private var phoneId: String = sharedPreferences.getString("user_id", "") ?: "DEFAULT"
 
     enum class OperationsStatus {
         IDLE,
@@ -56,7 +54,8 @@ class OperationsViewModel(sharedPreferences: SharedPreferences) : ViewModel() {
     fun getLocalPhotos() {
         viewModelScope.launch(Dispatchers.IO) {
             _operationsStatus.postValue(OperationsStatus.RETRIEVE_NOT_SYNCED_PHOTOS)
-            val localFilesNotSyncedResult = PhotoServices.getLocalFilesNotSynced(phoneId)
+            val localFilesNotSyncedResult =
+                PhotoServices.getLocalFilesNotSynced(userId(), ipAddress())
             localFilesNotSyncedResult.onSuccess {
                 cachedPhotos = it
                 _operationsStatus.postValue(OperationsStatus.RETRIEVE_NOT_SYNCED_PHOTOS_SUCCESS)
@@ -71,7 +70,7 @@ class OperationsViewModel(sharedPreferences: SharedPreferences) : ViewModel() {
         viewModelScope.launch(Dispatchers.IO) {
             cachedPhotos?.let {
                 _operationsStatus.postValue(OperationsStatus.SYNCING_PHOTOS)
-                val syncPhotosResult = PhotoServices.sendPhotosToSync(phoneId, it)
+                val syncPhotosResult = PhotoServices.sendPhotosToSync(userId(), ipAddress(), it)
                 syncPhotosResult.onSuccess {
                     _operationsStatus.postValue(OperationsStatus.SYNCING_PHOTOS_SUCCESS)
                 }.onFailure {
@@ -86,7 +85,7 @@ class OperationsViewModel(sharedPreferences: SharedPreferences) : ViewModel() {
             cachedPhotos?.let {
                 _operationsStatus.postValue(OperationsStatus.SYNCING_PHOTOS)
                 val syncPhotosResult =
-                    PhotoServices.sendPhotosToSyncOneByOne(phoneId, it) { index ->
+                    PhotoServices.sendPhotosToSyncOneByOne(userId(), ipAddress(), it) { index ->
                         _currentIndexOfSync.postValue(index)
                     }
                 syncPhotosResult.onSuccess {
@@ -104,5 +103,20 @@ class OperationsViewModel(sharedPreferences: SharedPreferences) : ViewModel() {
 
     fun getNumberOfPhotosToSync(): Int {
         return cachedPhotos?.size ?: 0
+    }
+
+    // Maybe not the best approach for using up-to-date preferences.
+    // Todo: maybe look on how to inject the preferences or define some listeners for changes?
+
+    private fun userId(): String {
+        return sharedPreferences.getString("user_id", "") ?: "Alice"
+    }
+
+    private fun ipAddress(): String {
+        return sharedPreferences.getString("server_ip", "") ?: "192.168.1.2"
+    }
+
+    private fun folderPath(): String {
+        return sharedPreferences.getString("folder_path", "") ?: ""
     }
 }

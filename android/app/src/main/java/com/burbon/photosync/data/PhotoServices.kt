@@ -33,7 +33,7 @@ object PhotoServices {
         }
     }
 
-    suspend fun getLocalFilesNotSynced(phoneId: String): Result<Set<File>> {
+    suspend fun getLocalFilesNotSynced(phoneId: String, ip: String): Result<Set<File>> {
         val localPhotosResult = LocalStorageSource.getPhotoFiles(photosPath)
         if (localPhotosResult.isFailure) {
             Log.e(TAG, "Could not get local photos.")
@@ -43,7 +43,7 @@ object PhotoServices {
         val localPhotos = localPhotosResult.getOrThrow()
         Log.d(TAG, "Found ${localPhotos.size} local photos")
         val photosId = localPhotos.map { photoFile -> photoFile.name }
-        val result = PhotoDataSource.getImagesToSend(phoneId, photosId)
+        val result = PhotoDataSource.getImagesToSend(ipToFullUrl(ip), phoneId, photosId)
 
         if (result.isFailure) {
             Log.e(TAG, "Could not retrieve images to send: $result")
@@ -60,7 +60,7 @@ object PhotoServices {
         return Result.success(notSyncedPhotos)
     }
 
-    suspend fun sendPhotosToSync(phoneId: String, photos: Set<File>): Result<Unit> {
+    suspend fun sendPhotosToSync(phoneId: String, ip: String, photos: Set<File>): Result<Unit> {
         Log.d(TAG, "Converting photos to base64 encoding")
         val base64Photos = photos
             .map { photo ->
@@ -70,7 +70,7 @@ object PhotoServices {
             }
         val requestImages = RequestSendImages(phoneId, base64Photos)
         Log.d(TAG, "Sending local images to PhotoDataSource")
-        val result = PhotoDataSource.putImages(requestImages)
+        val result = PhotoDataSource.putImages(ipToFullUrl(ip), requestImages)
         if (result.isSuccess) {
             return Result.success(Unit)
         }
@@ -81,6 +81,7 @@ object PhotoServices {
 
     suspend fun sendPhotosToSyncOneByOne(
         phoneId: String,
+        ip: String,
         photos: Set<File>,
         callback: (Int) -> Unit
     ): Result<Unit> {
@@ -94,7 +95,7 @@ object PhotoServices {
             val encoding = ImageEncoding(photo.name, photoEncoding, "base64")
             val requestImage = RequestSendImages(phoneId, listOf(encoding))
             Log.d(TAG, "Sending local images to PhotoDataSource")
-            val result = PhotoDataSource.putImages(requestImage)
+            val result = PhotoDataSource.putImages(ipToFullUrl(ip), requestImage)
             if (result.isSuccess) {
                 index += 1
                 callback(index)
@@ -121,6 +122,10 @@ object PhotoServices {
             }
             return@use outputStream.toString()
         }
+    }
+
+    private fun ipToFullUrl(ip: String): String {
+        return "http://$ip:3000"
     }
 }
 

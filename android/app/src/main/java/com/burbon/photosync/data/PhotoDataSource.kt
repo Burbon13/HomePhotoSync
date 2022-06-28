@@ -11,6 +11,7 @@ import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST
 import retrofit2.http.PUT
+import retrofit2.http.Path
 import java.lang.Exception
 
 object PhotoDataSource {
@@ -18,11 +19,17 @@ object PhotoDataSource {
         @GET("/photo-sync/api/test")
         suspend fun getTest(): ResultTest
 
-        @POST("/photo-sync/api/photos")
-        suspend fun getImagesToSend(@Body request: RequestWhichImagesToSend): ResultWhichImagesToSend
+        @POST("{fullUrl}/photo-sync/api/photos")
+        suspend fun getImagesToSend(
+            @Path(value = "fullUrl", encoded = true) fullUrl: String,
+            @Body request: RequestWhichImagesToSend
+        ): ResultWhichImagesToSend
 
-        @PUT("/photo-sync/api/photos")
-        suspend fun sendImages(@Body request: RequestSendImages): ResultSendImages
+        @PUT("{fullUrl}/photo-sync/api/photos")
+        suspend fun sendImages(
+            @Path(value = "fullUrl", encoded = true) fullUrl: String,
+            @Body request: RequestSendImages
+        ): ResultSendImages
     }
 
     private val photoService: PhotoService = Api.retrofit.create(
@@ -40,13 +47,14 @@ object PhotoDataSource {
     }
 
     suspend fun getImagesToSend(
+        url: String,
         phoneId: String,
         photoIdList: List<String>
     ): Result<ResultWhichImagesToSend> {
         return try {
-            Log.d(TAG, "Try get images to send")
+            Log.d(TAG, "Try get images to send from $url")
             val result =
-                photoService.getImagesToSend(RequestWhichImagesToSend(phoneId, photoIdList))
+                photoService.getImagesToSend(url, RequestWhichImagesToSend(phoneId, photoIdList))
             Log.d(TAG, "Get images to send success: $result")
             Result.success(result)
         } catch (e: Exception) {
@@ -55,10 +63,10 @@ object PhotoDataSource {
         }
     }
 
-    suspend fun putImages(request: RequestSendImages): Result<ResultSendImages> {
+    suspend fun putImages(url: String, request: RequestSendImages): Result<ResultSendImages> {
         return try {
-            Log.d(TAG, "Try send images " + request.photoList.size + " images")
-            val result = photoService.sendImages(request)
+            Log.d(TAG, "Try send images " + request.photoList.size + " images to $url")
+            val result = photoService.sendImages(url, request)
             Log.d(TAG, "Images sent request success: $result")
             Result.success(result)
         } catch (e: Exception) {
