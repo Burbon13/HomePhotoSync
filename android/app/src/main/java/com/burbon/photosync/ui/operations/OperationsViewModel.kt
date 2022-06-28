@@ -55,7 +55,7 @@ class OperationsViewModel(private val sharedPreferences: SharedPreferences) : Vi
         viewModelScope.launch(Dispatchers.IO) {
             _operationsStatus.postValue(OperationsStatus.RETRIEVE_NOT_SYNCED_PHOTOS)
             val localFilesNotSyncedResult =
-                PhotoServices.getLocalFilesNotSynced(userId(), ipAddress())
+                PhotoServices.getLocalFilesNotSynced(userId(), ipAddress(), folderPath())
             localFilesNotSyncedResult.onSuccess {
                 cachedPhotos = it
                 _operationsStatus.postValue(OperationsStatus.RETRIEVE_NOT_SYNCED_PHOTOS_SUCCESS)
@@ -109,14 +109,16 @@ class OperationsViewModel(private val sharedPreferences: SharedPreferences) : Vi
     // Todo: maybe look on how to inject the preferences or define some listeners for changes?
 
     private fun userId(): String {
-        return sharedPreferences.getString("user_id", "") ?: "Alice"
+        return sharedPreferences.getString("user_id", "Alice") ?: "Alice"
     }
 
     private fun ipAddress(): String {
-        return sharedPreferences.getString("server_ip", "") ?: "192.168.1.2"
+        return sharedPreferences.getString("server_ip", "192.168.1.2") ?: "192.168.1.2"
     }
 
     private fun folderPath(): String {
-        return sharedPreferences.getString("folder_path", "") ?: ""
+        // Todo: check Environment.getExternalStorageDirectory()
+        return sharedPreferences.getString("folder_path", "/sdcard/DCIM/CameraTest")
+            ?: "/sdcard/DCIM/CameraTest"
     }
 }

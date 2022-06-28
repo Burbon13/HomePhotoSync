@@ -12,8 +12,6 @@ import java.io.File
 
 object PhotoServices {
 
-    private val photosPath = "/sdcard/DCIM/CameraTest" // Use String from preferences
-
     enum class BackendConnection {
         WORKING,
         NOT_WORKING
@@ -33,7 +31,11 @@ object PhotoServices {
         }
     }
 
-    suspend fun getLocalFilesNotSynced(phoneId: String, ip: String): Result<Set<File>> {
+    suspend fun getLocalFilesNotSynced(
+        phoneId: String,
+        ip: String,
+        photosPath: String
+    ): Result<Set<File>> {
         val localPhotosResult = LocalStorageSource.getPhotoFiles(photosPath)
         if (localPhotosResult.isFailure) {
             Log.e(TAG, "Could not get local photos.")
