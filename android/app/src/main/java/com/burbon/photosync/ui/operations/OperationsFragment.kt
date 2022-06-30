@@ -46,12 +46,17 @@ class OperationsFragment : Fragment() {
         _operationsViewModel.operationsStatus.observe(viewLifecycleOwner, { status ->
             adjustUiActivation(status)
             updateUiText(status)
+            updateProgressBar(status)
         })
 
-        // TODO: Decide what types of values are observable to have a clear structure
-        // TODO: On which UI updates to do when.
         _operationsViewModel.currentIndexOfSync.observe(viewLifecycleOwner, { index ->
-            binding.opsExtraInfoTextView.text = getString(R.string.synced_nr_photos, index, _operationsViewModel.getNumberOfPhotosToSync())
+            binding.opsExtraInfoTextView.text = getString(
+                R.string.synced_nr_photos,
+                index,
+                _operationsViewModel.getNumberOfPhotosToSync()
+            )
+            binding.progressBarSendPhotos.max = _operationsViewModel.getNumberOfPhotosToSync()
+            binding.progressBarSendPhotos.setProgress(index, true)
         })
 
         binding.buttonGetPhotos.setOnClickListener {
@@ -73,10 +78,6 @@ class OperationsFragment : Fragment() {
             }
         }
 
-        binding.buttonSendPhotos.setOnClickListener {
-            _operationsViewModel.sendLocalPhotos()
-        }
-
         binding.buttonSendPhotosOneByOne.setOnClickListener {
             _operationsViewModel.sendLocalPhotosOneByOne()
         }
@@ -90,14 +91,15 @@ class OperationsFragment : Fragment() {
     private fun adjustUiActivation(status: OperationsViewModel.OperationsStatus) {
         // Block buttons if executing operation
         if (_operationsViewModel.operationsStatusExecuting(status)) {
-            binding.buttonGetPhotos.isEnabled = false
-            binding.buttonSendPhotos.isEnabled = false
-            binding.buttonSendPhotosOneByOne.isEnabled = false
+            binding.buttonGetPhotos.isClickable = false
+            binding.buttonSendPhotosOneByOne.isClickable = false
         } else {
-            binding.buttonGetPhotos.isEnabled = true
-            binding.buttonSendPhotos.isEnabled = true
-            binding.buttonSendPhotosOneByOne.isEnabled = true
+            binding.buttonGetPhotos.isClickable = true
+            binding.buttonSendPhotosOneByOne.isClickable = true
         }
+
+        binding.buttonSendPhotosOneByOne.isEnabled =
+            _operationsViewModel.getNumberOfPhotosToSync() != 0
     }
 
     private fun updateUiText(status: OperationsViewModel.OperationsStatus) {
@@ -122,10 +124,21 @@ class OperationsFragment : Fragment() {
 
         if (status == OperationsViewModel.OperationsStatus.SYNCING_PHOTOS_SUCCESS) {
             binding.opsStatusTextView.text = getString(R.string.ops_status_sync_photos_success)
+            binding.opsExtraInfoTextView.text = ""
         } else if (status == OperationsViewModel.OperationsStatus.SYNCING_PHOTOS_FAILURE) {
             binding.opsStatusTextView.text = getString(R.string.ops_status_sync_photos_failure)
+            binding.opsExtraInfoTextView.text = ""
         } else if (status == OperationsViewModel.OperationsStatus.SYNCING_PHOTOS) {
             binding.opsStatusTextView.text = getString(R.string.ops_status_sync_photos_in_progress)
+            binding.opsExtraInfoTextView.text = ""
+        }
+    }
+
+    private fun updateProgressBar(status: OperationsViewModel.OperationsStatus) {
+        if (status == OperationsViewModel.OperationsStatus.SYNCING_PHOTOS) {
+            binding.progressBarSendPhotos.visibility = View.VISIBLE
+        } else {
+            binding.progressBarSendPhotos.visibility = View.GONE
         }
     }
 }

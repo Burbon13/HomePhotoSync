@@ -4,8 +4,8 @@
     <string name="first_fragment_label">Sync Photos</string>
     <string name="preferences_fragment_label">Preferences</string>
     <string name="greeting_message">Welcome!</string>
-    <string name="send_photos">SEND PHOTOS</string>
-    <string name="get_photos">Get Photos</string>
+    <string name="get_photos">Get</string>
+    <string name="send_photos_1by1">Send</string>
     <string name="sth_went_wrong">Something went wrong :(</string>
 
     <!-- Preference Titles -->
@@ -23,6 +23,5 @@
     <string name="ops_status_sync_photos_success">Successfully synchronized photos! :D</string>
     <string name="ops_status_sync_photos_failure">Cannot synchronize photos :(</string>
     <string name="ops_status_sync_photos_in_progress">Synchronizing photos …</string>
-    <string name="send_photos_1by1">Send Photos 1by1</string>
     <string name="synced_nr_photos">Synced %d photos out of %d</string>
 </resources>
