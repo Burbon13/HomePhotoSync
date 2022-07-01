@@ -7,12 +7,8 @@
     <string name="get_photos">Get</string>
     <string name="send_photos_1by1">Send</string>
     <string name="sth_went_wrong">Something went wrong :(</string>
-
-    <!-- Preference Titles -->
     <string name="general_settings_header">General</string>
-
-    <!-- Messages Preferences -->
-    <string name="server_ip_title">Server IP Address</string>
+    <string name="server_ip_title">Server IPV4 Address</string>
     <string name="user_id_title">User ID</string>
     <string name="folder_path_title">Folder Path</string>
     <string name="ops_status_connection_success">Connection with server works! :D</string>
@@ -24,4 +20,10 @@
     <string name="ops_status_sync_photos_failure">Cannot synchronize photos :(</string>
     <string name="ops_status_sync_photos_in_progress">Synchronizing photos …</string>
     <string name="synced_nr_photos">Synced %d photos out of %d</string>
+    <string name="server_ip_dialog_message">Enter the IPV4 address of the server (without port or http protocol).</string>
+    <string name="used_id_dialog_message">Enter your unique ID so the server recognizes you. It must consist of at least 4 characters, all lowercase only!</string>
+    <string name="folder_path_dialog_message">Enter the path of the folder to be synced.</string>
+    <string name="invalid_ipv4_error_msg">Invalid IPV4 address!</string>
+    <string name="invalid_userid_error_msg">Invalid user ID!</string>
+    <string name="invalid_path_error_msg">Invalid path!</string>
 </resources>
