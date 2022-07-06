@@ -72,6 +72,7 @@ class OperationsViewModel(private val sharedPreferences: SharedPreferences) : Vi
                 _operationsStatus.postValue(OperationsStatus.SYNCING_PHOTOS)
                 val syncPhotosResult = PhotoServices.sendPhotosToSync(userId(), ipAddress(), it)
                 syncPhotosResult.onSuccess {
+                    cachedPhotos = emptySet()
                     _operationsStatus.postValue(OperationsStatus.SYNCING_PHOTOS_SUCCESS)
                 }.onFailure {
                     _operationsStatus.postValue(OperationsStatus.SYNCING_PHOTOS_FAILURE)
@@ -89,6 +90,7 @@ class OperationsViewModel(private val sharedPreferences: SharedPreferences) : Vi
                         _currentIndexOfSync.postValue(index)
                     }
                 syncPhotosResult.onSuccess {
+                    cachedPhotos = emptySet()
                     _operationsStatus.postValue(OperationsStatus.SYNCING_PHOTOS_SUCCESS)
                 }.onFailure {
                     _operationsStatus.postValue(OperationsStatus.SYNCING_PHOTOS_FAILURE)

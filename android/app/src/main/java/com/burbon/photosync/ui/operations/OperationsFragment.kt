@@ -93,13 +93,16 @@ class OperationsFragment : Fragment() {
         if (_operationsViewModel.operationsStatusExecuting(status)) {
             binding.buttonGetPhotos.isClickable = false
             binding.buttonSendPhotosOneByOne.isClickable = false
+            binding.buttonSendPhotosOneByOne.isEnabled = false
+            binding.buttonGetPhotos.isEnabled = false
         } else {
             binding.buttonGetPhotos.isClickable = true
-            binding.buttonSendPhotosOneByOne.isClickable = true
+            binding.buttonGetPhotos.isEnabled = true
+            binding.buttonSendPhotosOneByOne.isClickable =
+                _operationsViewModel.getNumberOfPhotosToSync() != 0
+            binding.buttonSendPhotosOneByOne.isEnabled =
+                _operationsViewModel.getNumberOfPhotosToSync() != 0
         }
-
-        binding.buttonSendPhotosOneByOne.isEnabled =
-            _operationsViewModel.getNumberOfPhotosToSync() != 0
     }
 
     private fun updateUiText(status: OperationsViewModel.OperationsStatus) {
