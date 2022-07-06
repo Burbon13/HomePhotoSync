@@ -34,9 +34,10 @@ object PhotoServices {
     suspend fun getLocalFilesNotSynced(
         phoneId: String,
         ip: String,
-        photosPath: String
+        photosPath: String,
+        onlyPhotos: Boolean
     ): Result<Set<File>> {
-        val localPhotosResult = LocalStorageSource.getPhotoFiles(photosPath)
+        val localPhotosResult = LocalStorageSource.getFiles(photosPath, onlyPhotos)
         if (localPhotosResult.isFailure) {
             Log.e(TAG, "Could not get local photos.")
             return Result.failure(PhotoServicesException("Could not get local photos"))

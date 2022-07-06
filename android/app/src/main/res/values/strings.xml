@@ -26,4 +26,6 @@
     <string name="invalid_ipv4_error_msg">Invalid IPV4 address!</string>
     <string name="invalid_userid_error_msg">Invalid user ID!</string>
     <string name="invalid_path_error_msg">Invalid path!</string>
+    <string name="sync_all_files_title">Synchronize all files</string>
+    <string name="sync_all_files_summary">If enabled, the synchronization process will consider all files (not only photos) present in the folder locate at the given path.</string>
 </resources>

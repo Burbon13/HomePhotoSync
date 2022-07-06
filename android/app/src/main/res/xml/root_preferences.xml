@@ -29,4 +29,15 @@
 
     </PreferenceCategory>
 
+    <PreferenceCategory app:title="Technical">
+
+        <SwitchPreferenceCompat
+            android:defaultValue="false"
+            android:key="sync_all_files"
+            android:title="@string/sync_all_files_title"
+            app:icon="@android:drawable/ic_menu_report_image"
+            app:summary="@string/sync_all_files_summary" />
+
+    </PreferenceCategory>
+
 </PreferenceScreen>

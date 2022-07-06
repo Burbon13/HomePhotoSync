@@ -7,10 +7,21 @@ import java.lang.Exception
 
 object LocalStorageSource {
 
-    fun getPhotoFiles(photosPath: String): Result<Set<File>> {
+    // The list probably is incomplete
+    private val imageExtensions = listOf("jpg", "png", "gif", "jpeg")
+
+    fun getFiles(photosPath: String, onlyImages: Boolean = true): Result<Set<File>> {
         Log.i(TAG, "Retrieve photo names")
         return try {
-            val photoFiles = File(photosPath).listFiles()?.asList()
+            val photoFiles = File(photosPath).listFiles()?.asList()?.filter { file ->
+                file.isFile  // Filter out folders, does not recursively search for photos!
+            }?.filter { file ->
+                // This is a primitive way of checking if the file is an image, the extension
+                // does not guarantee that the file is actually a picture.
+                !onlyImages || imageExtensions.any { ext ->
+                    file.extension.lowercase() == ext
+                }
+            }
             if (photoFiles != null) {
                 return Result.success(photoFiles.toSet())
             }

@@ -55,7 +55,12 @@ class OperationsViewModel(private val sharedPreferences: SharedPreferences) : Vi
         viewModelScope.launch(Dispatchers.IO) {
             _operationsStatus.postValue(OperationsStatus.RETRIEVE_NOT_SYNCED_PHOTOS)
             val localFilesNotSyncedResult =
-                PhotoServices.getLocalFilesNotSynced(userId(), ipAddress(), folderPath())
+                PhotoServices.getLocalFilesNotSynced(
+                    userId(),
+                    ipAddress(),
+                    folderPath(),
+                    syncOnlyPhotos()
+                )
             localFilesNotSyncedResult.onSuccess {
                 cachedPhotos = it
                 _operationsStatus.postValue(OperationsStatus.RETRIEVE_NOT_SYNCED_PHOTOS_SUCCESS)
@@ -122,5 +127,9 @@ class OperationsViewModel(private val sharedPreferences: SharedPreferences) : Vi
         // Todo: check Environment.getExternalStorageDirectory()
         return sharedPreferences.getString("folder_path", "/sdcard/DCIM/CameraTest")
             ?: "/sdcard/DCIM/CameraTest"
+    }
+
+    private fun syncOnlyPhotos(): Boolean {
+        return sharedPreferences.getBoolean("sync_all_files", true).not()
     }
 }
